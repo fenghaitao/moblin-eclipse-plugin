@@ -1,0 +1,23 @@
+2009-12-10	Haitao Feng	<haitao.feng@intel.com>
+	* Initial code commit.
+
+	* This is an Eclipse plug-in for Moblin developers to easily use Moblin SDK.
+	* It supports the following features based on Linux Autotools plug-in and
+	* target management plug-in.
+		* Create an autotool-based C/C++ project for Moblin
+		* Import existing autotool-based C/C++ projects for Moblin
+		* Build those projects by using Moblin SDK
+		* Deploy those projects to Moblin netbook and undeploy from netbook
+		* Debug and run the application in the Moblin netbook
+
+	* It has been verified for Eclipse 3.5 and Eclipse 3.5.1.
+	* To run this plug-in, you need
+		* Install Linux Autools from 
+			http://www.eclipse.org/linuxtools/projectPages/autotools/
+		* Install Target management from 
+			http://www.eclipse.org/dsdp/tm/
+		* Download Moblin SDK from 
+			http://moblin.org/documentation/moblin-sdk/
+			getting-ready-moblin-development/installing-moblin-toolchain
+
+	* Please contact us if you have any comments or feedback!
