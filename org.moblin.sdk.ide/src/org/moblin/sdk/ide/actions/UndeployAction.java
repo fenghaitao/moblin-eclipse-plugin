@@ -7,10 +7,8 @@ import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.ConsoleOutputStream;
 import org.eclipse.cdt.core.resources.IConsole;
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -25,10 +23,7 @@ import org.eclipse.rse.internal.files.ui.ISystemFileConstants;
 import org.eclipse.rse.services.clientserver.messages.SimpleSystemMessage;
 import org.eclipse.rse.services.clientserver.messages.SystemMessage;
 import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
-import org.eclipse.rse.services.files.IFilePermissionsService;
-import org.eclipse.rse.services.files.IHostFilePermissions;
 import org.eclipse.rse.services.files.RemoteFileIOException;
-import org.eclipse.rse.subsystems.files.core.model.RemoteFileUtility;
 import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFile;
 import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFileSubSystem;
 import org.eclipse.rse.ui.messages.SystemMessageDialog;
@@ -36,22 +31,21 @@ import org.moblin.sdk.ide.MoblinSDKMessages;
 import org.moblin.sdk.ide.MoblinSDKPlugin;
 
 @SuppressWarnings("restriction")
-public class DeployAction extends InvokeSyncAction {
-	private static final String DEPLOY_TITLE  = "Menu.Deploy.Title";
-	private static final String DEPLOY_MESSAGE  = "Menu.Deploy.Message";
+public class UndeployAction extends InvokeSyncAction {
+	private static final String UNDEPLOY_TITLE  = "Menu.Undeploy.Title";
+	private static final String UNDEPLOY_MESSAGE  = "Menu.Undeploy.Message";
 
-	private static final String DEFAULT_RM_COMMAND = "rm";
-	private static final String DEFAULT_RM_ARG_1 = "-rf";
+	private static final String DEFAULT_RM_COMMAND = "rm"; 
+	private static final String DEFAULT_RM_ARG_1 = "-rf"; 
 
-	private static final String DEFAULT_MAKE_COMMAND = "make";
-	private static final String DEFAULT_MAKE_ARG_1 = "install";
-	private static final String DEFAULT_MAKE_ARG_2 = "DESTDIR=";
-	private static final String DEFAULT_MAKE_INSTALL_DIR = ".install";
-	private static final String CONSOLE_SUCCESS_MESSAGE  = "Menu.SDK.Console.Deploy.Success.Message";
-	private static final String CONSOLE_FAIL_MESSAGE  = "Menu.SDK.Console.Deploy.Fail.Message";
+	private static final String DEFAULT_MAKE_COMMAND = "make"; 
+	private static final String DEFAULT_MAKE_ARG_1 = "install"; 
+	private static final String DEFAULT_MAKE_ARG_2 = "DESTDIR="; 
+	private static final String DEFAULT_MAKE_UNINSTALL_DIR = ".uninstall"; 
+	private static final String CONSOLE_SUCCESS_MESSAGE  = "Menu.SDK.Console.Undeploy.Success.Message";
+	private static final String CONSOLE_FAIL_MESSAGE  = "Menu.SDK.Console.Undeploy.Fail.Message";
 
 	public void run(IAction action) {
-
 		IContainer container = getSelectedContainer();
 		if (container == null)
 			return;
@@ -61,48 +55,48 @@ public class DeployAction extends InvokeSyncAction {
 		
 		// Invoke the SystemSelectRemoteFolderAction to get RemoteDir and RemoteConnection
 		SystemSelectRemoteFolderAction rseAction = new SystemSelectRemoteFolderAction(MoblinSDKPlugin.getActiveWorkbenchShell());
-		rseAction.setDialogTitle(MoblinSDKMessages.getFormattedString(DEPLOY_TITLE, project_name));
-		rseAction.setMessage(MoblinSDKMessages.getString(DEPLOY_MESSAGE));
+		rseAction.setDialogTitle(MoblinSDKMessages.getFormattedString(UNDEPLOY_TITLE, project_name));
+		rseAction.setMessage(MoblinSDKMessages.getString(UNDEPLOY_MESSAGE));
 		rseAction.setMultipleSelectionMode(false);
 		rseAction.run();
 		IRemoteFile remoteDir = rseAction.getSelectedFolder();
 		IHost connection = rseAction.getSelectedConnection();
 
-		if (connection != null && remoteDir != null) {
-			IPath execDir = getExecDir(container);
-			String installDir = execDir.toString() + File.separator + DEFAULT_MAKE_INSTALL_DIR;
-
+		if (connection != null && remoteDir != null) {		
 			// Get a Moblin console for the project
 			IConsole console = CCorePlugin.getDefault().getConsole("org.moblin.sdk.ide.moblinConsole");
 			console.start(project);
 
-			//Invoke make install DESTDIR=
-	        File install_dir = new File(installDir);
-	        if (install_dir.exists()) {
-			String rmArgumentList[] = new String[2];
-			rmArgumentList[0] = DEFAULT_RM_ARG_1;
-			rmArgumentList[1] = installDir;
-			String rm_command_name = DEFAULT_RM_COMMAND + " " + rmArgumentList[0] + " " + rmArgumentList[1];
-			executeConsoleCommandSync(console, rm_command_name, DEFAULT_RM_COMMAND, rmArgumentList, execDir);
+			IPath execDir = getExecDir(container);		
+			String uninstallDir = execDir.toString() + File.separator + DEFAULT_MAKE_UNINSTALL_DIR;
+
+	        File uninstall_dir = new File(uninstallDir);
+	        if (uninstall_dir.exists()) {
+				String rmArgumentList[] = new String[2];
+				rmArgumentList[0] = DEFAULT_RM_ARG_1;
+				rmArgumentList[1] = uninstallDir;
+				String rm_command_name = DEFAULT_RM_COMMAND + " " + rmArgumentList[0] + " " + rmArgumentList[1]; 
+				executeConsoleCommandSync(console, rm_command_name, DEFAULT_RM_COMMAND, rmArgumentList, execDir);
 	        }
 
 	        String makeArgumentList[] = new String[2];
 			makeArgumentList[0] = DEFAULT_MAKE_ARG_1;
-			makeArgumentList[1] = DEFAULT_MAKE_ARG_2 + installDir;
-			String make_command_name = DEFAULT_MAKE_COMMAND + " " + makeArgumentList[0] + " " + makeArgumentList[1];
+			makeArgumentList[1] = DEFAULT_MAKE_ARG_2 + uninstallDir;
+			String make_command_name = DEFAULT_MAKE_COMMAND + " " + makeArgumentList[0] + " " + makeArgumentList[1]; 
 			executeConsoleCommandSync(console, make_command_name, DEFAULT_MAKE_COMMAND, makeArgumentList, execDir);
 
-			if (install_dir.exists()) {
+			if (uninstall_dir.exists()) {
 				// Deploy installDir
 				IProgressMonitor monitor = new NullProgressMonitor();
+				File[] children = uninstall_dir.listFiles();
 				boolean success = true;
-				File[] children = install_dir.listFiles();
 				for (int i = 0; i < children.length; i++) {
-			        if (deploy(children[i], remoteDir, monitor) == null) {
+			        if (undeploy(children[i], remoteDir, monitor) == null) {
 			        	success = false;
 			        	break;
 			        }
 				}
+	
 				try {
 					ConsoleOutputStream consoleOutStream = console.getOutputStream();
 					String projectName = project.getName();
@@ -124,18 +118,10 @@ public class DeployAction extends InvokeSyncAction {
 		}
 	}
 
-	public static IFilePermissionsService getPermissionsService(IRemoteFile remoteFile){
-
-		if (remoteFile instanceof IAdaptable){
-			return (IFilePermissionsService)((IAdaptable)remoteFile).getAdapter(IFilePermissionsService.class);
-		}
-
-		return null;
-	}
-	
-	public static Object deploy(File srcFileOrFolder, IRemoteFile targetFolder, IProgressMonitor monitor)
+	public static Object undeploy(File srcFileOrFolder, IRemoteFile targetFolder, IProgressMonitor monitor)
 	{
 		IRemoteFileSubSystem targetFS = targetFolder.getParentRemoteFileSubSystem();
+
 		if (targetFolder.isStale())
 		{
 			try
@@ -146,6 +132,17 @@ public class DeployAction extends InvokeSyncAction {
 			{
 				return null;
 			}
+		}
+
+		if (!targetFolder.exists())
+		{
+			String msgTxt = NLS.bind(FileResources.FILEMSG_FOLDER_NOTFOUND, 
+							targetFolder.getHost().getName() + ":" + targetFolder.getAbsolutePath());
+			SystemMessage errorMsg = new SimpleSystemMessage(Activator.PLUGIN_ID,
+						ISystemFileConstants.FILEMSG_FOLDER_NOTFOUND,
+						IStatus.ERROR, msgTxt);
+			SystemMessageDialog.displayMessage(MoblinSDKPlugin.getActiveWorkbenchShell(), errorMsg.toString());
+			return null;
 		}
 
 		if (!targetFolder.canWrite())
@@ -172,41 +169,11 @@ public class DeployAction extends InvokeSyncAction {
 			newPathBuf.append(targetFolder.getSeparatorChar());
 			newPathBuf.append(name);	
 			String newPath = newPathBuf.toString();
-
 			try
 			{
-				IRemoteFile copiedFile = null;
-
-				// just copy using local location
-				String srcFileLocation = srcFileOrFolder.toString();
-				String srcCharSet = null;
-
-				boolean isText = RemoteFileUtility.getSystemFileTransferModeRegistry().isText(srcFileLocation);
-				if (isText)
-				{
-					srcCharSet = RemoteFileUtility.getSourceEncoding((IFile)srcFileOrFolder);
-					// for bug 236723, getting remote encoding for target instead of default for target fs
-					String remoteEncoding = targetFolder.getEncoding();
-					targetFS.upload(srcFileLocation, srcCharSet, newPath, remoteEncoding, monitor);
-				}else {
-					targetFS.upload(srcFileLocation, null, newPath, null, monitor);
-				}
-
-				copiedFile = targetFS.getRemoteFileObject(targetFolder, name, monitor);
-
-				// Set executable permission if necessary 
-				if (srcFileOrFolder.canExecute()){
-					IFilePermissionsService service = getPermissionsService(copiedFile);
-
-					int capabilities = service.getCapabilities(copiedFile.getHostFile());
-					if ((capabilities & IFilePermissionsService.FS_CAN_SET_PERMISSIONS) != 0){
-						IHostFilePermissions permission = service.getFilePermissions(copiedFile.getHostFile(), new NullProgressMonitor());
-						permission.setPermissionBits(permission.getPermissionBits() | IHostFilePermissions.PERM_ANY_EXECUTE);
-						service.setFilePermissions(copiedFile.getHostFile(), permission, new NullProgressMonitor());
-					}
-				}
-
-				return copiedFile;
+				IRemoteFile targetFile = targetFS.getRemoteFileObject(newPath, monitor);
+				targetFS.delete(targetFile, monitor);
+				return targetFile;
 			}
 			catch (RemoteFileIOException e)
 			{
@@ -227,17 +194,10 @@ public class DeployAction extends InvokeSyncAction {
 			String newPath = newPathBuf.toString();
 
 			// this is a directory
-			// recursively copy
+			// recursively remove
 			try
 			{
 				IRemoteFile newTargetFolder = targetFS.getRemoteFileObject(newPath, monitor);
-				if (!newTargetFolder.exists())
-				{
-					targetFS.createFolder(newTargetFolder, monitor);
-					newTargetFolder.markStale(true);
-					newTargetFolder = targetFS.getRemoteFileObject(newPath, monitor);
-				}
-
 				File[] children = srcFileOrFolder.listFiles();
 				for (int i = 0; i < children.length; i++)
 				{
@@ -248,7 +208,7 @@ public class DeployAction extends InvokeSyncAction {
 					else
 					{
 						File child = children[i];
-						if (deploy(child, newTargetFolder, monitor) == null)
+						if (undeploy(child, newTargetFolder, monitor) == null)
 						{
 							return null;
 						}

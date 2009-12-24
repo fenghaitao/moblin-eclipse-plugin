@@ -22,7 +22,7 @@ public class ConfigureAction extends InvokeAction {
 	private static final String SDK_LOCATION = "Preferences.SDK.Location.Name";
 	private static final String SDK_TRIPLET  = "Preferences.SDK.Triplet.Name";
 	private static final String DIALOG_TITLE  = "Menu.SDK.Dialog.Title";
-	private static final String CONSOLE_MESSAGE  = "Menu.SDK.Console.Message";
+	private static final String CONSOLE_MESSAGE  = "Menu.SDK.Console.Configure.Message";
 	
 	public void run(IAction action) {
 		IContainer container = getSelectedContainer();
@@ -51,17 +51,15 @@ public class ConfigureAction extends InvokeAction {
 			MoblinSDKProjectNature.setEnvironmentVariables(project, location, triplet);
 			MoblinSDKProjectNature.configureAutotoolsOptions(project, location, triplet);
 			
-			IConsole console = CCorePlugin.getDefault().getConsole("org.moblin.sdk.ide.configureConsole");
+			IConsole console = CCorePlugin.getDefault().getConsole("org.moblin.sdk.ide.moblinConsole");
 			console.start(project);
 			ConsoleOutputStream consoleOutStream;
 			try {
 				consoleOutStream = console.getOutputStream();
 				String messages = MoblinSDKMessages.getString(CONSOLE_MESSAGE);
-				try {
-					consoleOutStream.write(messages.getBytes());
-				} catch (IOException e) {
-				}
-				consoleOutStream.flush();			
+				consoleOutStream.write(messages.getBytes());
+				consoleOutStream.flush();
+				consoleOutStream.close();
 			} catch (CoreException e1) {
 			} catch (IOException e2) {
 			}

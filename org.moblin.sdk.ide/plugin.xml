@@ -49,8 +49,8 @@
       </command>
       <command
             categoryId="org.moblin.sdk.ide.category.invokeMoblintools"
-            id="org.moblin.sdk.ide.command.remove"
-            name="%MoblinSDK.Remove.Name">
+            id="org.moblin.sdk.ide.command.undeploy"
+            name="%MoblinSDK.Undeploy.Name">
       </command>
    </extension>
    <extension
@@ -124,8 +124,8 @@
          </enabledWhen>
       </handler>
       <handler
-            class="org.moblin.sdk.ide.actions.RemoveHandler"
-            commandId="org.moblin.sdk.ide.command.remove">
+            class="org.moblin.sdk.ide.actions.UndeployHandler"
+            commandId="org.moblin.sdk.ide.command.undeploy">
          <activeWhen>
             <with
                   variable="selection">
@@ -181,10 +181,10 @@
                style="push">
          </command>
          <command
-               commandId="org.moblin.sdk.ide.command.remove"
-               id="remove"
-               label="%MoblinSDK.Remove.Name"
-               mnemonic="%MoblinSDK.Remove.Mnemonic"
+               commandId="org.moblin.sdk.ide.command.undeploy"
+               id="undeploy"
+               label="%MoblinSDK.Undeploy.Name"
+               mnemonic="%MoblinSDK.Undeploy.Mnemonic"
                style="push">
          </command>
       </menuContribution>
@@ -280,8 +280,8 @@
    <extension
          point="org.eclipse.cdt.core.CBuildConsole">
       <CBuildConsole
-            class="org.moblin.sdk.ide.actions.ConfigureConsole"
-            id="org.moblin.sdk.ide.configureConsole">
+            class="org.moblin.sdk.ide.actions.MoblinConsole"
+            id="org.moblin.sdk.ide.moblinConsole">
       </CBuildConsole>
    </extension>
 

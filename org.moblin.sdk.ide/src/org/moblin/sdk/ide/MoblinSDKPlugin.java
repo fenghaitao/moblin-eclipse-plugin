@@ -1,5 +1,11 @@
 package org.moblin.sdk.ide;
 
+import java.lang.reflect.InvocationTargetException;
+
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -47,6 +53,25 @@ public class MoblinSDKPlugin extends AbstractUIPlugin {
 	 */
 	public static MoblinSDKPlugin getDefault() {
 		return plugin;
+	}
+
+	public static void log(IStatus status) {
+		ResourcesPlugin.getPlugin().getLog().log(status);
+	}
+
+	public static void log(Throwable e) {
+		if (e instanceof InvocationTargetException)
+			e = ((InvocationTargetException) e).getTargetException();
+		IStatus status = null;
+		if (e instanceof CoreException)
+			status = ((CoreException) e).getStatus();
+		else
+			status = new Status(IStatus.ERROR, getUniqueIdentifier(), IStatus.OK, e.getMessage(), e);
+		log(status);
+	}
+
+	public static void logErrorMessage(String message) {
+		log(new Status(IStatus.ERROR, getUniqueIdentifier(), IStatus.ERROR, message, null));
 	}
 
 	/**

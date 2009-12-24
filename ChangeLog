@@ -1,3 +1,16 @@
+2009-12-24	Haitao Feng	<haitao.feng@intel.com>
+	* Implement remote deployment and remote undeployment by using target 
+	* management plug-in.
+
+	* Add InvokeSyncAction.java for that we need to finish "make install"
+	* before we could do the remote deployment and undeployment, otherwise
+	* there will be a race condition.
+	
+	* The target managment's upload function does not grant the execute permission,
+	* so I write a recursive function to do the deployment.
+
+	* The undeployment is done by a similar recursive way.
+
 2009-12-10	Haitao Feng	<haitao.feng@intel.com>
 	* Initial code commit.
 
