@@ -1,3 +1,7 @@
+2009-12-31	Haitao Feng	<haitao.feng@intel.com>
+	* Add more RSE features into plugin feature dependencies
+	* Otherwise there is no RSE connection when we select remote deployment
+
 2009-12-24	Haitao Feng	<haitao.feng@intel.com>
 	* Implement remote deployment and remote undeployment by using target 
 	* management plug-in.
