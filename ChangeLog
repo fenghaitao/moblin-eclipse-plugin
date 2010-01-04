@@ -4,6 +4,7 @@
 	* Move host_alias from autotool option to environment variable
 	* Add update site URL into feature
 	* Add cdt into plugin feature dependencies
+	* Add update site project into git repo
 
 2009-12-31	Haitao Feng	<haitao.feng@intel.com>
 	* Add more RSE features into plugin feature dependencies

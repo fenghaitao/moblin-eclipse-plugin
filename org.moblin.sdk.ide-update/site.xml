@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.moblin.sdk.ide_1.0.0.201001041116.jar" id="org.moblin.sdk.ide" version="1.0.0.201001041116">
+      <category name="org.moblin.sdk.ide"/>
+   </feature>
+   <category-def name="org.moblin.sdk.ide" label="Moblin SDK Plugin">
+      <description>
+         A Plugin for maintaining C/C++ projects that use Autotools (autoconf and automake) for Moblin
+      </description>
+   </category-def>
+</site>
