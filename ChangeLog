@@ -2,6 +2,7 @@
 	* Commit Packaging code on behalf on Chen, Zhang (zhang.z.chen@intel.com)
 	* Add more CDT features (Debug and Remote launch) into plugin feature dependencies
 	* Move host_alias from autotool option to environment variable
+	* Add update site URL into feature
 
 2009-12-31	Haitao Feng	<haitao.feng@intel.com>
 	* Add more RSE features into plugin feature dependencies

@@ -17,6 +17,10 @@
       %license
    </license>
 
+   <url>
+      <update label="Moblin SDK Plug-in" url="http://moblin.org/sites/all/files/moblin-eclipse-plugin/update"/>
+   </url>
+
    <requires>
       <import plugin="org.eclipse.ui" version="3.5.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.runtime" version="3.5.0" match="greaterOrEqual"/>
