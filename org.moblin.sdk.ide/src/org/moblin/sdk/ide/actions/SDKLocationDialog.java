@@ -30,6 +30,8 @@ public class SDKLocationDialog extends Dialog {
 	private String toolchain_location_value;
 	private String toolchain_triplet_name;
 	private String toolchain_triplet_value;
+	private String toolchain_location_ret_value = null;
+	private String toolchain_triplet_ret_value = null;
 	
 	private Text location_value;
 	private Text triplet_value;
@@ -157,20 +159,17 @@ public class SDKLocationDialog extends Dialog {
 	
 	protected void buttonPressed(int buttonId) {
 		if (buttonId == IDialogConstants.OK_ID) {
-			toolchain_location_value = location_value.getText();
-			toolchain_triplet_value  = triplet_value.getText();
-		} else {
-			toolchain_location_value = null;
-			toolchain_triplet_value  = null;
+			toolchain_location_ret_value = location_value.getText();
+			toolchain_triplet_ret_value  = triplet_value.getText();
 		}
 		super.buttonPressed(buttonId);
 	}
 	
 	public String getToolchainLocation() {
-		return toolchain_location_value;
+		return toolchain_location_ret_value;
 	}
 
 	public String getToolchainTriplet() {
-		return toolchain_triplet_value;
+		return toolchain_triplet_ret_value;
 	}
 }

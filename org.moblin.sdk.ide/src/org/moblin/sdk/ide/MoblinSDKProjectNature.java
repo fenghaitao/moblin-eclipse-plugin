@@ -59,6 +59,7 @@ public class MoblinSDKProjectNature implements IProjectNature {
 		IEnvironmentVariableManager manager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 		IContributedEnvironment env = manager.getContributedEnvironment();
 		String delimiter = manager.getDefaultDelimiter();
+
 		// PATH
 		String sys_path    = System.getenv("PATH");
 		String moblin_path = "";
@@ -78,6 +79,9 @@ public class MoblinSDKProjectNature implements IProjectNature {
         String moblin_pkg_path2 = moblin_pkg_sys_root + File.separator + "usr" + File.separator + "share" + File.separator + "pkgconfig";
         String moblin_pkg_path =  moblin_pkg_path1 + delimiter + moblin_pkg_path2;
         env.addVariable("PKG_CONFIG_PATH", moblin_pkg_path, IEnvironmentVariable.ENVVAR_REPLACE, delimiter, ccdesc);
+
+        // host_alias
+		env.addVariable("host_alias", toolchain_triplet, IEnvironmentVariable.ENVVAR_REPLACE, delimiter, ccdesc);
 
 		try {
 			CoreModel.getDefault().setProjectDescription(project, cpdesc);
@@ -113,7 +117,7 @@ public class MoblinSDKProjectNature implements IProjectNature {
 		SDKCheckResults result = MoblinSDKChecker.checkMoblinSDK(toolchain_location, toolchain_triplet);
 		if (result == SDKCheckResults.SDK_PASS){
 			setEnvironmentVariables(project, toolchain_location, toolchain_triplet);
-			configureAutotoolsOptions(project, toolchain_location, toolchain_triplet);
+			//configureAutotoolsOptions(project, toolchain_location, toolchain_triplet);
 		}else {
 			String title   =  MoblinSDKMessages.getString(WIZARD_WARNING_TITLE);		
 			String message =  MoblinSDKChecker.getErrorMessage(result, SDKCheckRequestFrom.Wizard);

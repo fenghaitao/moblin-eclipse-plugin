@@ -52,6 +52,11 @@
             id="org.moblin.sdk.ide.command.undeploy"
             name="%MoblinSDK.Undeploy.Name">
       </command>
+      <command
+            categoryId="org.moblin.sdk.ide.category.invokeMoblintools"
+            id="org.moblin.sdk.ide.command.package"
+            name="%MoblinSDK.Package.Name">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -157,6 +162,40 @@
             </with>
          </enabledWhen>
       </handler>
+      <handler
+            class="org.moblin.sdk.ide.actions.PackageHandler"
+            commandId="org.moblin.sdk.ide.command.package">
+         <activeWhen>
+            <with
+                  variable="selection">
+               <count
+                     value="1">
+               </count>
+               <iterate
+                     ifEmpty="false"
+                     operator="and">
+                  <adapt
+                        type="org.eclipse.core.resources.IResource">
+                  </adapt>
+               </iterate>
+            </with>
+         </activeWhen>
+         <enabledWhen>
+            <with
+                  variable="selection">
+               <count
+                     value="1">
+               </count>
+               <iterate
+                     ifEmpty="false"
+                     operator="and">
+                  <adapt
+                        type="org.eclipse.core.resources.IResource">
+                  </adapt>
+               </iterate>
+            </with>
+         </enabledWhen>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -185,6 +224,17 @@
                id="undeploy"
                label="%MoblinSDK.Undeploy.Name"
                mnemonic="%MoblinSDK.Undeploy.Mnemonic"
+               style="push">
+         </command>
+         <separator
+               name="org.moblin.sdk.ide.separator2"
+               visible="true">
+         </separator>
+         <command
+               commandId="org.moblin.sdk.ide.command.package"
+               id="package"
+               label="%MoblinSDK.Package.Name"
+               mnemonic="%MoblinSDK.Package.Mnemonic"
                style="push">
          </command>
       </menuContribution>

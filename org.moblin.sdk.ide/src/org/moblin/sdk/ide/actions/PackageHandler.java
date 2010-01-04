@@ -7,11 +7,11 @@ import org.eclipse.core.expressions.IEvaluationContext;
 import org.eclipse.linuxtools.internal.cdt.autotools.ui.actions.AbstractAutotoolsHandler;
 
 @SuppressWarnings("restriction")
-public class RemoveHandler extends AbstractAutotoolsHandler {
+public class PackageHandler extends AbstractAutotoolsHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		RemoveAction a = new RemoveAction();
+		PackageAction a = new PackageAction();
 		Object o = event.getApplicationContext();
 		if (o instanceof IEvaluationContext) {
 			IContainer container = getContainer((IEvaluationContext)o);

@@ -49,7 +49,7 @@ public class ConfigureAction extends InvokeAction {
 		if (location != null) {
 			IProject project = container.getProject();
 			MoblinSDKProjectNature.setEnvironmentVariables(project, location, triplet);
-			MoblinSDKProjectNature.configureAutotoolsOptions(project, location, triplet);
+			//MoblinSDKProjectNature.configureAutotoolsOptions(project, location, triplet);
 			
 			IConsole console = CCorePlugin.getDefault().getConsole("org.moblin.sdk.ide.moblinConsole");
 			console.start(project);
