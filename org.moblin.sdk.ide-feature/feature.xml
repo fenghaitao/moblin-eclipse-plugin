@@ -41,6 +41,7 @@
       <import feature="org.eclipse.rse.ssh" version="3.0.1" match="greaterOrEqual"/>
       <import feature="org.eclipse.cdt.launch.remote" version="6.0.0.200909110608" match="greaterOrEqual"/>
       <import feature="org.eclipse.cdt.gnu.debug" version="6.0.0.200909110608" match="greaterOrEqual"/>
+      <import feature="org.eclipse.cdt" version="6.0.0.200909110608" match="greaterOrEqual"/>
    </requires>
 
    <plugin
