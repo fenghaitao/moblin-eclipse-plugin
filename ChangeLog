@@ -1,3 +1,10 @@
+2010-01-08	Haitao Feng	<haitao.feng@intel.com>
+	* Rewrite deployment and undeployment functionality
+	* RSE will not copy symbolic link itself, instead it will copy all the real
+	* things the symbolic links, this behaviour is not what we expected.
+	* Change deploy to use the zip approach, the RSE ssh does not support zipping
+	* Change deploy into a background job so that the messsage displays timely in console
+
 2010-01-04	Haitao Feng	<haitao.feng@intel.com>
 	* Commit Packaging code on behalf on Chen, Zhang (zhang.z.chen@intel.com)
 	* Add more CDT features (Debug and Remote launch) into plugin feature dependencies

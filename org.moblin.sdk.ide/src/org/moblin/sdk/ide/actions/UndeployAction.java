@@ -8,11 +8,16 @@ import org.eclipse.cdt.core.ConsoleOutputStream;
 import org.eclipse.cdt.core.resources.IConsole;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.rse.core.model.IHost;
@@ -61,64 +66,105 @@ public class UndeployAction extends InvokeSyncAction {
 		rseAction.run();
 		IRemoteFile remoteDir = rseAction.getSelectedFolder();
 		IHost connection = rseAction.getSelectedConnection();
+		IPath execDir = getExecDir(container);		
 
-		if (connection != null && remoteDir != null) {		
-			// Get a Moblin console for the project
-			IConsole console = CCorePlugin.getDefault().getConsole("org.moblin.sdk.ide.moblinConsole");
-			console.start(project);
-
-			IPath execDir = getExecDir(container);		
-			String uninstallDir = execDir.toString() + File.separator + DEFAULT_MAKE_UNINSTALL_DIR;
-
-	        File uninstall_dir = new File(uninstallDir);
-	        if (uninstall_dir.exists()) {
-				String rmArgumentList[] = new String[2];
-				rmArgumentList[0] = DEFAULT_RM_ARG_1;
-				rmArgumentList[1] = uninstallDir;
-				String rm_command_name = DEFAULT_RM_COMMAND + " " + rmArgumentList[0] + " " + rmArgumentList[1]; 
-				executeConsoleCommandSync(console, rm_command_name, DEFAULT_RM_COMMAND, rmArgumentList, execDir);
-	        }
-
-	        String makeArgumentList[] = new String[2];
-			makeArgumentList[0] = DEFAULT_MAKE_ARG_1;
-			makeArgumentList[1] = DEFAULT_MAKE_ARG_2 + uninstallDir;
-			String make_command_name = DEFAULT_MAKE_COMMAND + " " + makeArgumentList[0] + " " + makeArgumentList[1]; 
-			executeConsoleCommandSync(console, make_command_name, DEFAULT_MAKE_COMMAND, makeArgumentList, execDir);
-
-			if (uninstall_dir.exists()) {
-				// Deploy installDir
-				IProgressMonitor monitor = new NullProgressMonitor();
-				File[] children = uninstall_dir.listFiles();
-				boolean success = true;
-				for (int i = 0; i < children.length; i++) {
-			        if (undeploy(children[i], remoteDir, monitor) == null) {
-			        	success = false;
-			        	break;
-			        }
-				}
-	
-				try {
-					ConsoleOutputStream consoleOutStream = console.getOutputStream();
-					String projectName = project.getName();
-					String dstDir = remoteDir.getHost().getName() + ":" + remoteDir.getAbsolutePath();
-					Object[] args = new Object[] {projectName, dstDir };
-					String message;
-					if (success) {
-						message = MoblinSDKMessages.getFormattedString(CONSOLE_SUCCESS_MESSAGE, args);
-					}else {
-						message = MoblinSDKMessages.getFormattedString(CONSOLE_FAIL_MESSAGE, args);
-					}
-					consoleOutStream.write(message.getBytes());
-					consoleOutStream.flush();
-					consoleOutStream.close();
-				} catch (CoreException e) {
-				} catch (IOException e) {
-				}
-			}
-		}
+		executeUndeployCommand(project, connection,remoteDir, execDir);
 	}
 
-	public static Object undeploy(File srcFileOrFolder, IRemoteFile targetFolder, IProgressMonitor monitor)
+	protected void executeUndeployCommand(final IProject project, final IHost connection,	
+			final IRemoteFile remoteDir, final IPath execDir) {
+		// We need to use a workspace root scheduling rule because adding MakeTargets
+		// may end up saving the project description which runs under a workspace root rule.
+		final ISchedulingRule rule = ResourcesPlugin.getWorkspace().getRoot();
+
+		Job backgroundJob = new Job("Undeploy") {
+			/* (non-Javadoc)
+			 * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
+			 */
+			protected IStatus run(IProgressMonitor monitor) {
+				try {
+					ResourcesPlugin.getWorkspace().run(new IWorkspaceRunnable() {
+
+						public void run(IProgressMonitor monitor) throws CoreException {
+							if (connection != null && remoteDir != null) {		
+								// Get a Moblin console for the project
+								IConsole console = CCorePlugin.getDefault().getConsole("org.moblin.sdk.ide.moblinConsole");
+								console.start(project);
+
+								String uninstallDir = execDir.toString() + File.separator + DEFAULT_MAKE_UNINSTALL_DIR;
+
+						        File uninstall_dir = new File(uninstallDir);
+						        if (uninstall_dir.exists()) {
+									String rmArgumentList[] = new String[2];
+									rmArgumentList[0] = DEFAULT_RM_ARG_1;
+									rmArgumentList[1] = uninstallDir;
+									String rm_command_name = DEFAULT_RM_COMMAND + " " + rmArgumentList[0] + " " + rmArgumentList[1]; 
+									try {
+										executeLocalConsoleCommand(console, rm_command_name, DEFAULT_RM_COMMAND, rmArgumentList, execDir);
+									} catch (CoreException e) {
+									} catch (IOException e) {
+									}
+						        }
+
+						        String makeArgumentList[] = new String[2];
+								makeArgumentList[0] = DEFAULT_MAKE_ARG_1;
+								makeArgumentList[1] = DEFAULT_MAKE_ARG_2 + uninstallDir;
+								String make_command_name = DEFAULT_MAKE_COMMAND + " " + makeArgumentList[0] + " " + makeArgumentList[1]; 
+								try {
+									executeLocalConsoleCommand(console, make_command_name, DEFAULT_MAKE_COMMAND, makeArgumentList, execDir);
+								} catch (CoreException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								} catch (IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+
+								if (uninstall_dir.exists()) {
+									// Deploy installDir
+									File[] children = uninstall_dir.listFiles();
+									boolean success = true;
+									for (int i = 0; i < children.length; i++) {
+								        if (undeploy(children[i], remoteDir, monitor) == null) {
+								        	success = false;
+								        	break;
+								        }
+									}
+						
+									try {
+										ConsoleOutputStream consoleOutStream = console.getOutputStream();
+										String projectName = project.getName();
+										String dstDir = remoteDir.getHost().getName() + ":" + remoteDir.getAbsolutePath();
+										Object[] args = new Object[] {projectName, dstDir };
+										String message;
+										if (success) {
+											message = MoblinSDKMessages.getFormattedString(CONSOLE_SUCCESS_MESSAGE, args);
+										}else {
+											message = MoblinSDKMessages.getFormattedString(CONSOLE_FAIL_MESSAGE, args);
+										}
+										consoleOutStream.write(message.getBytes());
+										consoleOutStream.flush();
+										consoleOutStream.close();
+									} catch (CoreException e) {
+									} catch (IOException e) {
+									}
+								}
+							}
+						}
+					}, rule, IWorkspace.AVOID_UPDATE, monitor);
+				} catch (CoreException e) {
+					return e.getStatus();
+				}
+				IStatus returnStatus = Status.OK_STATUS;
+				return returnStatus;
+			}
+		};
+
+		backgroundJob.setRule(rule);
+		backgroundJob.schedule();
+	}
+	
+	public Object undeploy(File srcFileOrFolder, IRemoteFile targetFolder, IProgressMonitor monitor)
 	{
 		IRemoteFileSubSystem targetFS = targetFolder.getParentRemoteFileSubSystem();
 
@@ -171,8 +217,12 @@ public class UndeployAction extends InvokeSyncAction {
 			String newPath = newPathBuf.toString();
 			try
 			{
-				IRemoteFile targetFile = targetFS.getRemoteFileObject(newPath, monitor);
-				targetFS.delete(targetFile, monitor);
+				IRemoteFile targetFile = targetFS.getRemoteFileObject(newPath, monitor);				
+				try {
+					executeRemoteConsoleCommand(targetFile.getHost(), "rm" + " " + "-f" + " " + newPath);
+				} catch (Exception e) {
+				}
+				//targetFS.delete(targetFile, monitor);
 				return targetFile;
 			}
 			catch (RemoteFileIOException e)
