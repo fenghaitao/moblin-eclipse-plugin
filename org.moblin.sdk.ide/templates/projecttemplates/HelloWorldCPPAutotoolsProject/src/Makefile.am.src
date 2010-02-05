@@ -6,6 +6,5 @@ AM_CXXFLAGS = @$(projectName)_CFLAGS@
 AM_LDFLAGS = @$(projectName)_LIBS@
 
 desktop_DATA = $(projectName).desktop
-icon_DATA = clutter_$(projectName).png
 
 CLEANFILES = *~ $(projectName).desktop
