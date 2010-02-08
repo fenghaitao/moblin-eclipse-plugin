@@ -42,7 +42,8 @@
       <import feature="org.eclipse.cdt.launch.remote" version="6.0.0.200909110608" match="greaterOrEqual"/>
       <import feature="org.eclipse.cdt.gnu.debug" version="6.0.0.200909110608" match="greaterOrEqual"/>
       <import feature="org.eclipse.cdt" version="6.0.0.200909110608" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.cdt.launch.remote.source"/>
+      <import plugin="org.eclipse.rse.subsystems.shells.core" version="3.1.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.rse.shells.ui" version="3.0.100" match="greaterOrEqual"/>
    </requires>
 
    <plugin
