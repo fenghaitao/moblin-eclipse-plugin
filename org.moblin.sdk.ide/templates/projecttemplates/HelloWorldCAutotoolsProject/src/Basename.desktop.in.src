@@ -5,6 +5,5 @@ Name=$(projectName) with Clutter
 Comment=A "$(message)" application with simple animations using Clutter
 Type=Application
 Categories=Application
-Icon=clutter_$(projectName)
 Exec=$(projectName)
 Name[en_US]=$(message) with Clutter
