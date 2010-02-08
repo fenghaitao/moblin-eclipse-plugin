@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.moblin.sdk.ide_1.0.0.201002081044.jar" id="org.moblin.sdk.ide" version="1.0.0.201002081044">
+   <feature url="features/org.moblin.sdk.ide_1.0.0.201002081109.jar" id="org.moblin.sdk.ide" version="1.0.0.201002081109">
       <category name="org.moblin.sdk.ide"/>
    </feature>
    <category-def name="org.moblin.sdk.ide" label="Moblin SDK Plugin">
