@@ -95,11 +95,6 @@
 				<simple name="replaceable" value="true"/>
 			</element>
 			<element>
-				<simple name="source" value="src/clutter_Basename.png"/>
-				<simple name="target" value="$(sourceDir)/clutter_$(projectName).png"/>
-				<simple name="replaceable" value="true"/>
-			</element>
-			<element>
 				<simple name="source" value="src/configure.ac.top"/>
 				<simple name="target" value="configure.ac"/>
 				<simple name="replaceable" value="true"/>

@@ -1,3 +1,6 @@
+2010-02-24	Haitao Feng	<haitao.feng@intel.com>
+	* Merge Elliot's project-files branch into master
+
 2010-01-08	Haitao Feng	<haitao.feng@intel.com>
 	* Rewrite deployment and undeployment functionality
 	* RSE will not copy symbolic link itself, instead it will copy all the real
